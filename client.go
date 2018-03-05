@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 )
+
 //URLClientOption is a struct which provides options for client
 type URLClientOption struct {
 	SSLEnabled            bool
@@ -24,6 +25,7 @@ type URLClientOption struct {
 	ResponseHeaderTimeout time.Duration
 	Verbose               bool
 }
+
 //URLClient is a struct used for storing details of a client
 type URLClient struct {
 	*http.Client
@@ -34,6 +36,7 @@ type URLClient struct {
 
 	options URLClientOption
 }
+
 //HttpDo is a method used for http connection
 func (client *URLClient) HttpDo(method string, rawURL string, headers http.Header, body []byte) (resp *http.Response, err error) {
 	client.clientHasPrefix(rawURL, "https")
@@ -92,12 +95,14 @@ func (client *URLClient) clientHasPrefix(url, pro string) {
 		}
 	}
 }
+
 //DefaultURLClientOption is a struct object which has default client option
 var DefaultURLClientOption = &URLClientOption{
 	Compressed:            true,
 	HandshakeTimeout:      30 * time.Second,
 	ResponseHeaderTimeout: 60 * time.Second,
 }
+
 //GetURLClient is a function which which sets client option
 func GetURLClient(option *URLClientOption) (client *URLClient, err error) {
 	if option == nil {
@@ -140,6 +145,7 @@ func GetURLClient(option *URLClientOption) (client *URLClient, err error) {
 	}
 	return
 }
+
 //GetX509CACertPool is a function used to get certificate
 func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
@@ -151,23 +157,24 @@ func GetX509CACertPool(caCertFile string) (*x509.CertPool, error) {
 	pool.AppendCertsFromPEM(caCert)
 	return pool, nil
 }
+
 //LoadTLSCertificate is a function used to load a certificate
 func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cipher) ([]tls.Certificate, error) {
 	certContent, err := ioutil.ReadFile(certFile)
 	if err != nil {
-		errorMsg:="read cert file"+ certFile +"failed."
+		errorMsg := "read cert file" + certFile + "failed."
 		return nil, errors.New(errorMsg)
 	}
 
 	keyContent, err := ioutil.ReadFile(keyFile)
 	if err != nil {
-		errorMsg:="read key file"+ keyFile +"failed."
+		errorMsg := "read key file" + keyFile + "failed."
 		return nil, errors.New(errorMsg)
 	}
 
 	keyBlock, _ := pem.Decode(keyContent)
 	if keyBlock == nil {
-		errorMsg:="decode key file "+ keyFile+" failed"
+		errorMsg := "decode key file " + keyFile + " failed"
 		return nil, errors.New(errorMsg)
 	}
 
@@ -179,7 +186,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cip
 	if x509.IsEncryptedPEMBlock(keyBlock) {
 		keyData, err := x509.DecryptPEMBlock(keyBlock, []byte(plainpass))
 		if err != nil {
-			errorMsg:="decrypt key file "+keyFile+" failed."
+			errorMsg := "decrypt key file " + keyFile + " failed."
 			return nil, errors.New(errorMsg)
 		}
 
@@ -194,7 +201,7 @@ func LoadTLSCertificate(certFile, keyFile, passphase string, cipher security.Cip
 
 	cert, err := tls.X509KeyPair(certContent, keyContent)
 	if err != nil {
-		errorMsg:="load X509 key pair from cert file "+ certFile+" with key file "+keyFile+" failed."
+		errorMsg := "load X509 key pair from cert file " + certFile + " with key file " + keyFile + " failed."
 		return nil, errors.New(errorMsg)
 	}
 
